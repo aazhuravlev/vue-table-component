@@ -1,0 +1,23 @@
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+
+  src:
+    local('Source Sans Pro Regular'),
+    local('SourceSansPro-Regular'),
+    url('https://fonts.gstatic.com/s/sourcesanspro/v13/6xK3dSBYKcSV-LCoeQqfX1RYOo3qPK7lqDY.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+
+  src:
+    local('Source Sans Pro SemiBold'),
+    local('SourceSansPro-SemiBold'),
+    url('https://fonts.gstatic.com/s/sourcesanspro/v13/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmhduz8A.woff2') format('woff2');
+}
