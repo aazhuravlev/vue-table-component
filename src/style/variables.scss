@@ -1,10 +1,55 @@
-$light-gray: #F2F2F2;
-$dark-blue: #282136;
+$lightest-gray: #F2F2F2;
+$lighter-gray: #ededed;
+$light-gray: #F8F9FA;
+$light-middle-gray: #D5DAE0;
+$middle-gray: #C6CBD4;
+$transparent-black: rgba(0, 0, 0, 0.16);
+$gray: #3D374A;
+
+$darker-gray: #5B5E77;
+$darkest-gray: #282136;
+$light-blue: rgba(0, 161, 30, 0.07);
+
+$white: #FFFFFF;
+
+$green: #00A11E;
 
 $base-font: "Source Sans Pro", sans-serif;
 $base-font-size: 14px;
 $base-line-height: 24px;
 $base-font-weight: 400;
-$base-font-color: $dark-blue;
+$base-font-color: $darkest-gray;
+$contrast-font-color: $white;
 
-$body-background-color: $light-gray;
+$body-background-color: $lightest-gray;
+
+$separator-line-color: $lighter-gray;
+
+$sorting-color: $gray;
+$active-sorting-button-color: $green;
+
+$arrow-icon-color: $darker-gray;
+
+$pagination-label-color: $gray;
+
+$table-head-color: $white;
+$active-column-head-color: $green;
+$odd-table-row-color: $white;
+$even-table-row-color: $light-gray;
+$table-row-hover-color: $light-blue;
+$table-row-button-color: $darker-gray;
+
+$button-border-color: $light-middle-gray;
+$disabled-button-font-color: $darker-gray;
+$disabled-button-border-color: $middle-gray;
+$disabled-button-bg-color: $lightest-gray;
+
+$shadow-color: $transparent-black;
+
+$checkbox-border-color: $middle-gray;
+$checkbox-bg-color: $green;
+$checkbox-mark-color: $white;
+
+$modal-bg-color: $white;
+$modal-cancel-button-border-color: $middle-gray;
+$modal-cancel-button-font-color: $darker-gray
