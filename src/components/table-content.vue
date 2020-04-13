@@ -44,6 +44,7 @@ export default {
     ],
     methods: {
         toggleReverseSorting(header) {
+            // метод для разворота сортировки
             this.$emit('toggleReverseSorting', header);
         }
     }

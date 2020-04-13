@@ -40,9 +40,11 @@ export default {
           'getProductsLength'
       ]),
       itemsOnPageFrom() {
+          // метод для отображения начала интервала отображаемых данных
           return this.currentPage * this.itemsPerPage + 1;
       },
       itemsOnPageTo() {
+          // метод для отображения окончания интервала отображаемых данных
           const currentItems = this.currentPage * this.itemsPerPage + this.itemsPerPage;
           if (currentItems > this.getProductsLength) {
               return this.getProductsLength;

@@ -70,7 +70,7 @@
                         class="checkbox__input visually-hidden"
                         type="checkbox"
                         :id="tableHeader.field"
-                        :checked="tableHeader.visible"
+                        :checked="tableHeader.isVisible"
                         @change="$emit('changeHeaderVisibility', index)"
                     />
                     <label
@@ -103,6 +103,7 @@ export default {
     },
     methods: {
         itemsPerPageClickHandler(itemsCount) {
+            // обработчик для выбора количества элементов на странице
             this.isItemsPerPageList = false;
             this.$emit('itemsPerPageClickHandler', itemsCount);
         }

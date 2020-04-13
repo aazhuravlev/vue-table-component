@@ -63,9 +63,11 @@ export default {
     },
     methods: {
         closeModal(prop) {
+            // обработчик клика по кнопке отмены
             this.isConfirmation = prop;
         },
         deletionConfirmationClickHandler(id) {
+            // обработчик клика при подтверждении удаления
             this.isConfirmation = false;
             this.$emit('deletionConfirmationClickHandler', id);
         }

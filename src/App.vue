@@ -122,12 +122,12 @@ export default {
             pageSize: [10, 15, 20],
             sortType: 'product',
             tableHeaders: [
-              { field: 'product', name: 'Product (100g serving)', visible: true },
-              { field: 'calories', name: 'Calories', visible: true },
-              { field: 'fat', name: 'Fat (g)', visible: true },
-              { field: 'carbs', name: 'Carbs (g)', visible: true },
-              { field: 'protein', name: 'Protein (g)', visible: true },
-              { field: 'iron', name: 'Iron (%)', visible: true },
+              { field: 'product', name: 'Product (100g serving)', isVisible: true },
+              { field: 'calories', name: 'Calories', isVisible: true },
+              { field: 'fat', name: 'Fat (g)', isVisible: true },
+              { field: 'carbs', name: 'Carbs (g)', isVisible: true },
+              { field: 'protein', name: 'Protein (g)', isVisible: true },
+              { field: 'iron', name: 'Iron (%)', isVisible: true },
             ],
             productsToDeleteOnPage: null,
             isPageLoading: true,
@@ -144,12 +144,14 @@ export default {
         }
     },
     created() {
-        this.$store.dispatch('loadProducts')
+        this.$store.dispatch('loadProducts') // делаем запрос через экшн в сторе
             .then(() => {
+                // в случае успеха убираем лоадер и отображаем страницу
                 this.isPageLoading = false;
                 this.isPageLoaded = true;
             })
             .catch(() => {
+                // в случае ошибки убираем лоадер и отображаем модальное окно с ошибкой
                 this.isPageLoading = false;
                 this.isLoadingError = true;
             });
@@ -160,17 +162,20 @@ export default {
             'getCountProductsToDelete'
         ]),
         visibleTableHeaders() {
-            const visibleHeaders = this.tableHeaders.filter(header => header.visible);
+            // метод для получения только видимых заголовков
+            const visibleHeaders = this.tableHeaders.filter(header => header.isVisible);
             this.isAllColumnVisible = visibleHeaders.length === this.tableHeaders.length;
             return visibleHeaders;
         },
         tableHeadersBySort() {
+            // метод для установки первого заголовка в соответствии с выбранной сортировкой
             return [
                 ...this.visibleTableHeaders.filter(header => header.field === this.sortType),
                 ...this.visibleTableHeaders.filter(header => header.field !== this.sortType)
             ]
         },
         tableData() {
+            // метод для получения данных для текущей страницы таблицы
             this.chunkedProducts = this.getSortedChunkedProducts(
                 this.itemsPerPage, this.sortType, this.isSortingReverse
             );
@@ -183,40 +188,45 @@ export default {
             'toggleProductsListToDelete'
         ]),
         itemsPerPageClickHandler(itemsCount) {
+            // обработчик для выбора количества элементов на странице
             this.itemsPerPage = itemsCount;
             this.currentPage = 0;
 
-            this.isAllProductsOnPageCheckhed();
+            this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
         },
         sortTypeClickHandler(sortType) {
+            // метод для установки типа сортировки
             this.sortType = sortType;
         },
         closeModal(prop) {
+            // метод для закрытия модального окна
             this.isConfirmation = prop;
         },
         deletionConfirmationClickHandler(id) {
+            // обработчик клика при подтверждении удаления
             this.isConfirmation = false;
             this.isDataChanging = true;
 
             this.deleteProductHandler('deleteProduct', id);
         },
         deleteProductHandler(actionName, id) {
+            // метод для обработки результата загрузки
             this.$store.dispatch(actionName, id)
                 .then(() => {
+                    // в случае успеха убираем лоадер и показываем сообщение о успешном изменении
                     this.isDataChanging = false;
                     this.isDataChanged = true;
 
-                    this.isAllProductsOnPageCheckhed();
+                    this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
 
                     setTimeout(() => {
                         this.isDataChanged = false;
                     }, this.delay);
                 })
                 .catch(() => {
+                    // в случае ошибки убираем лоадер и показываем сообщение об ошибке
                     this.isDataChanging = false;
                     this.isDataChangeError = true;
-
-                    this.isAllProductsOnPageCheckhed();
 
                     setTimeout(() => {
                         this.isDataChangeError = false;
@@ -224,64 +234,72 @@ export default {
                 })
         },
         nextPageClickHandler() {
+            // обработчик клика по кнопке переключения на следующую страницу
             if (this.currentPage < this.chunkedProducts.length - 1) {
                 this.currentPage++;
 
-                this.isAllProductsOnPageCheckhed();
+                this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
             }
         },
         previousPageClickHandler() {
+            // обработчик клика по кнопке переключения на предыдущую страницу
             if (this.currentPage > 0) {
                 this.currentPage--;
 
-                this.isAllProductsOnPageCheckhed();
+                this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
             }
         },
         changeHeaderVisibility(index) {
+            // метод для изменения видимости заголовка
             const currentHeader = this.tableHeaders[index];
-            currentHeader.visible = !currentHeader.visible;
+            currentHeader.isVisible = !currentHeader.isVisible;
         },
         toggleReverseSorting(header) {
+            // метод для разворота сортировки
             if (header === this.sortType) {
                 this.isSortingReverse = !this.isSortingReverse;
 
-                this.isAllProductsOnPageCheckhed();
+                this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
             }
         },
         selectAllColumnHandler() {
-            this.tableHeaders.forEach(header => header.visible = true);
+            // метод, который работает только для отметки всех заголовков в селекте
+            this.tableHeaders.forEach(header => header.isVisible = true);
         },
         toggleAllProductsToDelete() {
-            this.isAllProductsOnPageCheckhed();
-
+            // метод для отметки всех продуктов на странице к удалению
             if (!this.isAllCheckhed) {
                 this.isAllCheckhed = true;
 
-                this.toggleProductsListToDelete({
-                    data: this.tableData,
+                this.toggleProductsListToDelete({ // устанавливаем элементам со страницы метки для удаления
+                    products: this.tableData,
                     prop: true
                 });
             } else {
                 this.isAllCheckhed = false;
 
-                this.toggleProductsListToDelete({
-                    data: this.tableData,
+                this.toggleProductsListToDelete({ // убираем элементам со страницы метки для удаления
+                    products: this.tableData,
                     prop: false
                 });
             }
         },
         markToDelete(id) {
+            // метод для отметки только одного продукта к удалению
             this.toggleProductToDelete(id);
 
             this.productsToDeleteOnPage = this.tableData.filter(product => product.isMarkToDelete).length;
 
             if (!this.isAllCheckhed && (this.productsToDeleteOnPage - 1) === (this.itemsPerPage - 1)) {
+                // условие срабатывает, при клике на последний чекбокс, если до этого было выбрано 9 чекбоксов из 10
+                // и устанавливает чекбокс, что все элементы на странице выбраны
                 this.isAllCheckhed = true;
             } else {
                 this.isAllCheckhed = false;
             }
         },
         isAllProductsOnPageCheckhed() {
+            // метод для актуализации чекбокса отметки всех элементов на странице
             this.isAllCheckhed = this.tableData.filter(product => product.isMarkToDelete).length === this.itemsPerPage;
         }
     }
