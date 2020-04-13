@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import chunk from 'lodash/chunk';
 
-import { getProducts } from '../../request.js'
+import { getProducts, deleteProducts } from '../../request.js'
 
 Vue.use(Vuex);
 
@@ -12,7 +12,7 @@ export default new Vuex.Store({
     },
     actions: {
         loadProducts({ commit }) {
-            getProducts()
+            return getProducts()
                 .then(response => {
                     let products = [];
                     response.forEach(product => {
@@ -20,6 +20,16 @@ export default new Vuex.Store({
                         products.push(product);
                     });
                     commit('setProducts' , products);
+                })
+        },
+        deleteProduct({ commit }, id) {
+            return deleteProducts()
+                .then(() => {
+                    if (id) {
+                      commit('deleteProduct', id)
+                    } else {
+                        commit('deleteProducts')
+                    }
                 });
         }
     },
@@ -42,6 +52,12 @@ export default new Vuex.Store({
 
               currentProduct.isMarkToDelete = prop;
             });
+        },
+        deleteProducts(state) {
+          state.products = state.products.filter(product => !product.isMarkToDelete);
+        },
+        deleteProduct(state, id) {
+            state.products = state.products.filter(product => product.id !== id);
         }
     },
     getters: {
