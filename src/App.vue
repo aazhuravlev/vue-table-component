@@ -33,6 +33,7 @@
                             v-if="isConfirmation"
                             :quantity="getCountProductsToDelete"
                             @closeModal="closeModal"
+                            @deletionConfirmationClickHandler="deletionConfirmationClickHandler"
                         />
                     </div>
 
@@ -71,8 +72,18 @@
                 @toggleAllProductsToDelete="toggleAllProductsToDelete"
                 @toggleReverseSorting="toggleReverseSorting"
                 @markToDelete="markToDelete"
+                @deletionConfirmationClickHandler="deletionConfirmationClickHandler"
             />
         </div>
+
+        <Spinner v-if="isDataChanging"/>
+        <AlertModal v-else-if="isDataChanged">
+            Продукты успешно удалены
+        </AlertModal>
+
+        <AlertModal v-else-if="isDataChangeError">
+            При удалении продуктов произошла ошибка, попробуйте еще раз
+        </AlertModal>
     </section>
     <AlertModal v-else-if="isLoadingError">
         При загрузке страницы произошла ошибка, пожалуйста, перезагрузите страницу
@@ -80,7 +91,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState, mapMutations } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 
 import PageSectionTitle from './components/page-section-title';
 import SortingMenu from './components/sorting-menu';
@@ -125,7 +136,11 @@ export default {
             isAllColumnVisible: null,
             isSortingReverse: false,
             isConfirmation: false,
-            isLoadingError: false
+            isLoadingError: false,
+            isDataChanging: false,
+            isDataChanged: false,
+            isDataChangeError: false,
+            delay: 1500
         }
     },
     created() {
@@ -170,6 +185,7 @@ export default {
         itemsPerPageClickHandler(itemsCount) {
             this.itemsPerPage = itemsCount;
             this.currentPage = 0;
+
             this.isAllProductsOnPageCheckhed();
         },
         sortTypeClickHandler(sortType) {
@@ -178,15 +194,46 @@ export default {
         closeModal(prop) {
             this.isConfirmation = prop;
         },
+        deletionConfirmationClickHandler(id) {
+            this.isConfirmation = false;
+            this.isDataChanging = true;
+
+            this.deleteProductHandler('deleteProduct', id);
+        },
+        deleteProductHandler(actionName, id) {
+            this.$store.dispatch(actionName, id)
+                .then(() => {
+                    this.isDataChanging = false;
+                    this.isDataChanged = true;
+
+                    this.isAllProductsOnPageCheckhed();
+
+                    setTimeout(() => {
+                        this.isDataChanged = false;
+                    }, this.delay);
+                })
+                .catch(() => {
+                    this.isDataChanging = false;
+                    this.isDataChangeError = true;
+
+                    this.isAllProductsOnPageCheckhed();
+
+                    setTimeout(() => {
+                        this.isDataChangeError = false;
+                    }, this.delay);
+                })
+        },
         nextPageClickHandler() {
             if (this.currentPage < this.chunkedProducts.length - 1) {
                 this.currentPage++;
+
                 this.isAllProductsOnPageCheckhed();
             }
         },
         previousPageClickHandler() {
             if (this.currentPage > 0) {
                 this.currentPage--;
+
                 this.isAllProductsOnPageCheckhed();
             }
         },
@@ -197,6 +244,7 @@ export default {
         toggleReverseSorting(header) {
             if (header === this.sortType) {
                 this.isSortingReverse = !this.isSortingReverse;
+
                 this.isAllProductsOnPageCheckhed();
             }
         },

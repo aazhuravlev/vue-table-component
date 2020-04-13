@@ -1,5 +1,8 @@
 <template>
-    <div class="modal">
+    <div
+        class="modal"
+        @click.stop
+    >
         <span
             class="modal__message"
             v-if="quantity > 1"
@@ -19,7 +22,10 @@
             >
                 Cancel
             </button>
-            <button class="modal__button button">
+            <button
+                class="modal__button button"
+                @click="$emit('deletionConfirmationClickHandler')"
+            >
                 Confirm
             </button>
         </div>

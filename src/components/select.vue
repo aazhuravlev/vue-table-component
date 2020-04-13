@@ -12,12 +12,13 @@
         <ul
             class="select__list"
             v-if="isItemsPerPageList"
+            @click.stop
         >
             <li
                 class="select__item"
                 v-for="itemsCount in pageSize"
                 :key="itemsCount"
-                @click.stop="itemsPerPageClickHandler(itemsCount)"
+                @click="itemsPerPageClickHandler(itemsCount)"
             >
                 {{ itemsCount }} Per Page
             </li>
@@ -37,11 +38,11 @@
         <ul
             class="multiselect__list"
             v-if="isColumnList"
+            @click.stop
         >
             <li class="multiselect__item">
                 <div
                     class="checkbox"
-                    @click.stop
                 >
                     <input
                         class="checkbox__input visually-hidden"
@@ -49,7 +50,7 @@
                         type="checkbox"
                         id="select-all-column"
                         :checked="isAllColumnVisible"
-                        @change.stop="$emit('selectAllColumnHandler')"
+                        @change="$emit('selectAllColumnHandler')"
                     />
                     <label
                         class="checkbox__label"
@@ -63,7 +64,6 @@
                 class="multiselect__item"
                 v-for="(tableHeader, index) in tableHeaders"
                 :key="tableHeader.field"
-                @click.stop
             >
                 <div class="checkbox">
                     <input

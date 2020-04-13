@@ -19,6 +19,8 @@
                 :item="item"
                 :tableHeadersBySort="tableHeadersBySort"
                 @markToDelete="$emit('markToDelete', item.id)"
+                @click="$emit('markToDelete', item.id)"
+                @deletionConfirmationClickHandler="$emit('deletionConfirmationClickHandler', item.id)"
             />
         </tbody>
     </table>

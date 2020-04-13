@@ -1,5 +1,5 @@
 <template>
-    <tr>
+    <tr @click="$emit('markToDelete')">
         <td class="table-content__data">
             <div class="checkbox">
                 <input
@@ -28,7 +28,7 @@
             <div class="table-content__row-wrapper">
                 <button
                     class="table-content__row-button"
-                    @click="isConfirmation = true"
+                    @click.stop="isConfirmation = true"
                 >
                     <svg class="table-content__row-button-icon">
                         <use xlink:href="./src/images/sprites.svg#icon-basket" />
@@ -38,6 +38,7 @@
                 <ConfirmationModal
                     v-if="isConfirmation"
                     @closeModal="closeModal"
+                    @deletionConfirmationClickHandler="deletionConfirmationClickHandler(item.id)"
                 />
             </div>
         </td>
@@ -63,6 +64,10 @@ export default {
     methods: {
         closeModal(prop) {
             this.isConfirmation = prop;
+        },
+        deletionConfirmationClickHandler(id) {
+            this.isConfirmation = false;
+            this.$emit('deletionConfirmationClickHandler', id);
         }
     }
 }
