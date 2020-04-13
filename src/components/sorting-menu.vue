@@ -39,6 +39,7 @@ export default {
     &__buttons-list {
         display: flex;
         flex-direction: row;
+        flex-wrap: wrap;
         margin-left: 5px;
     }
 

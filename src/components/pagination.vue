@@ -43,7 +43,11 @@ export default {
           return this.currentPage * this.itemsPerPage + 1;
       },
       itemsOnPageTo() {
-          return this.currentPage * this.itemsPerPage + this.itemsPerPage;
+          const currentItems = this.currentPage * this.itemsPerPage + this.itemsPerPage;
+          if (currentItems > this.getProductsLength) {
+              return this.getProductsLength;
+          }
+          return currentItems;
       }
     }
 }
