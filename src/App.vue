@@ -1,7 +1,8 @@
 <template>
+    <Spinner v-if="isPageLoading && !isPageLoaded"/>
     <section
         class="page-section"
-        v-if="isPageLoaded"
+        v-else-if="isPageLoaded"
     >
         <PageSectionTitle>
             <h1 class="page-section__title">Table UI</h1>
@@ -73,6 +74,9 @@
             />
         </div>
     </section>
+    <AlertModal v-else-if="isLoadingError">
+        При загрузке страницы произошла ошибка, пожалуйста, перезагрузите страницу
+    </AlertModal>
 </template>
 
 <script>
@@ -84,6 +88,8 @@ import Select from './components/select';
 import Pagination from './components/pagination';
 import TableContent from './components/table-content';
 import ConfirmationModal from './components/confirmation-modal';
+import Spinner from './components/spinner';
+import AlertModal from './components/alert-modal';
 
 export default {
     name: 'app',
@@ -93,7 +99,9 @@ export default {
         Select,
         Pagination,
         TableContent,
-        ConfirmationModal
+        ConfirmationModal,
+        Spinner,
+        AlertModal
     },
     data () {
         return {
@@ -111,20 +119,27 @@ export default {
               { field: 'iron', name: 'Iron (%)', visible: true },
             ],
             productsToDeleteOnPage: null,
-            isPageLoaded: true,
+            isPageLoading: true,
+            isPageLoaded: false,
             isAllCheckhed: false,
             isAllColumnVisible: null,
             isSortingReverse: false,
-            isConfirmation: false
+            isConfirmation: false,
+            isLoadingError: false
         }
     },
     created() {
-        this.$store.dispatch('loadProducts');
+        this.$store.dispatch('loadProducts')
+            .then(() => {
+                this.isPageLoading = false;
+                this.isPageLoaded = true;
+            })
+            .catch(() => {
+                this.isPageLoading = false;
+                this.isLoadingError = true;
+            });
     },
     computed: {
-        ...mapState([
-            'products'
-        ]),
         ...mapGetters([
             'getSortedChunkedProducts',
             'getCountProductsToDelete'
