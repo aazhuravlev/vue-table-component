@@ -71,6 +71,7 @@
                         type="checkbox"
                         :id="tableHeader.field"
                         :checked="tableHeader.isVisible"
+                        :disabled="tableHeader.field === sortType"
                         @change="$emit('changeHeaderVisibility', index)"
                     />
                     <label
@@ -93,7 +94,8 @@ export default {
         'isMultiselect',
         'tableHeaders',
         'isAllColumnVisible',
-        'visibleTableHeaders'
+        'visibleTableHeaders',
+        'sortType'
     ],
     data() {
         return {

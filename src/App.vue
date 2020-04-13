@@ -57,6 +57,7 @@
                         :isAllColumnVisible="isAllColumnVisible"
                         :visibleTableHeaders="visibleTableHeaders"
                         :isMultiselect="true"
+                        :sortType="sortType"
                         @selectAllColumnHandler="selectAllColumnHandler"
                         @changeHeaderVisibility="changeHeaderVisibility"
                     />
