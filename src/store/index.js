@@ -1,20 +1,72 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import chunk from 'lodash/chunk';
+
+import { getProducts } from '../../request.js'
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
+    state: {
+        products: []
+    },
+    actions: {
+        loadProducts({ commit }) {
+            getProducts()
+                .then(response => {
+                    let products = [];
+                    response.forEach(product => {
+                        product.isMarkToDelete = false;
+                        products.push(product);
+                    });
+                    commit('setProducts' , products);
+                });
+        }
+    },
+    mutations: {
+        setProducts(state, data) {
+            state.products = data;
+        },
+        toggleProductToDelete(state, id) {
+            const index = state.products.findIndex(product => product.id === id);
+            const product = state.products[index];
 
-  },
-  actions: {
+            product.isMarkToDelete = !product.isMarkToDelete;
+        },
+        toggleProductsListToDelete(state, payload) {
+            const { data, prop } = payload;
 
-  },
-  mutations: {
+            data.forEach(product => {
+              const index = state.products.findIndex(item => item.id === product.id);
+              const currentProduct = state.products[index];
 
-  },
-  getters: {
+              currentProduct.isMarkToDelete = prop;
+            });
+        }
+    },
+    getters: {
+        getProductsLength(state) {
+            return state.products.length
+        },
+        getCountProductsToDelete(state) {
+            return state.products.filter(product => product.isMarkToDelete).length;
+        },
+        getSortedChunkedProducts: (state) => (pageSize, sortType, isReverse) => {
+            const sortedProducts = [...state.products].sort((a, b) => {
+                if (a[sortType] > b[sortType]) {
+                    return 1;
+                }
+                if (a[sortType] < b[sortType]) {
+                    return -1;
+                }
+                return 0;
+            });
 
-  },
-  strict: process.env.NODE_ENV !== 'production'
+            if (isReverse) {
+                return chunk(sortedProducts.reverse(), pageSize);
+            }
+            return chunk(sortedProducts, pageSize);
+        }
+    },
+    strict: process.env.NODE_ENV !== 'production'
 });
