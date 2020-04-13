@@ -1,25 +1,25 @@
 <template>
-    <div class="modal-confirmation">
+    <div class="modal">
         <span
-            class="modal-confirmation__message"
+            class="modal__message"
             v-if="quantity > 1"
         >
             Are you sure you want to <b>delete {{ quantity }} items</b>?
         </span>
         <span
-            class="modal-confirmation__message"
+            class="modal__message"
             v-else
         >
             Are you sure you want to <b>delete item</b>?
         </span>
-        <div class="modal-confirmation__button-list">
+        <div class="modal__button-list">
             <button
-                class="modal-confirmation__button modal-confirmation__button--close button"
+                class="modal__button modal__button--close button"
                 @click="$emit('closeModal', false)"
             >
                 Cancel
             </button>
-            <button class="modal-confirmation__button button">
+            <button class="modal__button button">
                 Confirm
             </button>
         </div>
@@ -32,12 +32,12 @@ export default {
       'quantity'
     ]
 }
-</script>script
+</script>
 
 <style lang="scss">
 @import '../style/style.scss';
 
-.modal-confirmation {
+.modal {
     position: absolute;
     top: 34px;
     left: -100%;
