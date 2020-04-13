@@ -16,6 +16,7 @@ $green: #00A11E;
 
 $base-font: "Source Sans Pro", sans-serif;
 $base-font-size: 14px;
+$alert-modal-font-size: 17px;
 $base-line-height: 24px;
 $base-font-weight: 400;
 $base-font-color: $darkest-gray;
@@ -52,4 +53,6 @@ $checkbox-mark-color: $white;
 
 $modal-bg-color: $white;
 $modal-cancel-button-border-color: $middle-gray;
-$modal-cancel-button-font-color: $darker-gray
+$modal-cancel-button-font-color: $darker-gray;
+
+$spinner-color: $green;
