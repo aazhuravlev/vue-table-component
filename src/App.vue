@@ -197,6 +197,8 @@ export default {
         sortTypeClickHandler(sortType) {
             // метод для установки типа сортировки
             this.sortType = sortType;
+
+            this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
         },
         closeModal(prop) {
             // метод для закрытия модального окна
