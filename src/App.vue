@@ -1,26 +1,271 @@
 <template>
-  <div class="table">
-    <h1 class="table__title">Table UI</h1>
+    <section class="page-section" v-if="isPageLoaded">
+        <PageSectionTitle>
+            <h1 class="page-section__title">Table UI</h1>
+        </PageSectionTitle>
 
-  </div>
+        <div class="page-table">
+            <div class="page-table__control">
+                <SortingMenu
+                    :visibleTableHeaders="visibleTableHeaders"
+                    :sortType="sortType"
+                    @sortTypeClickHandler="sortTypeClickHandler"
+                />
+
+                <div class="page-table__contorl-wrapper">
+                    <div class="page-table__contorl-container">
+                        <button
+                            class="button button--delete"
+                            :disabled="getCountProductsToDelete === 0"
+                            @click="isConfirmation = true"
+                        >
+                            Delete
+                            <span v-if="getCountProductsToDelete > 0">
+                                ({{ getCountProductsToDelete }})
+                            </span>
+                        </button>
+
+                        <ConfirmationModal
+                            v-if="isConfirmation"
+                            :quantity="getCountProductsToDelete"
+                            @closeModal="closeModal"
+                        />
+                    </div>
+
+                    <Select
+                        :itemsPerPage="itemsPerPage"
+                        :pageSize="pageSize"
+                        :isMultiselect="false"
+                        @itemsPerPageClickHandler="itemsPerPageClickHandler"
+                    />
+
+                    <Pagination
+                        :currentPage="currentPage"
+                        :itemsPerPage="itemsPerPage"
+                        :chunkedProducts="chunkedProducts"
+                        @previousPageClickHandler="previousPageClickHandler"
+                        @nextPageClickHandler="nextPageClickHandler"
+                    />
+
+                    <Select
+                        :tableHeaders="tableHeaders"
+                        :isAllColumnVisible="isAllColumnVisible"
+                        :visibleTableHeaders="visibleTableHeaders"
+                        :isMultiselect="true"
+                        @selectAllColumnHandler="selectAllColumnHandler"
+                        @changeHeaderVisibility="changeHeaderVisibility"
+                    />
+                </div>
+            </div>
+
+            <TableContent
+                :isAllCheckhed="isAllCheckhed"
+                :tableHeadersBySort="tableHeadersBySort"
+                :sortType="sortType"
+                :isSortingReverse="isSortingReverse"
+                :tableData="tableData"
+                @toggleAllProductsToDelete="toggleAllProductsToDelete"
+                @toggleReverseSorting="toggleReverseSorting"
+                @markToDelete="markToDelete"
+            />
+        </div>
+    </section>
 </template>
 
 <script>
-export default {
-  name: 'app',
-  data () {
-    return {
+import { mapGetters, mapState, mapMutations } from 'vuex';
 
+import PageSectionTitle from './components/page-section-title';
+import SortingMenu from './components/sorting-menu';
+import Select from './components/select';
+import Pagination from './components/pagination';
+import TableContent from './components/table-content';
+import ConfirmationModal from './components/confirmation-modal';
+
+export default {
+    name: 'app',
+    components: {
+        PageSectionTitle,
+        SortingMenu,
+        Select,
+        Pagination,
+        TableContent,
+        ConfirmationModal
+    },
+    data () {
+        return {
+            chunkedProducts: [],
+            itemsPerPage: 10,
+            currentPage: 0,
+            pageSize: [10, 15, 20],
+            sortType: 'product',
+            tableHeaders: [
+              { field: 'product', name: 'Product (100g serving)', visible: true },
+              { field: 'calories', name: 'Calories', visible: true },
+              { field: 'fat', name: 'Fat (g)', visible: true },
+              { field: 'carbs', name: 'Carbs (g)', visible: true },
+              { field: 'protein', name: 'Protein (g)', visible: true },
+              { field: 'iron', name: 'Iron (%)', visible: true },
+            ],
+            productsToDeleteOnPage: null,
+            isPageLoaded: true,
+            isAllCheckhed: false,
+            isAllColumnVisible: null,
+            isSortingReverse: false,
+            isConfirmation: false
+        }
+    },
+    created() {
+        this.$store.dispatch('loadProducts');
+    },
+    computed: {
+        ...mapState(['products']),
+        ...mapGetters([
+            'getSortedChunkedProducts',
+            'getCountProductsToDelete'
+        ]),
+        visibleTableHeaders() {
+            const visibleHeaders = this.tableHeaders.filter(header => header.visible);
+            this.isAllColumnVisible = visibleHeaders.length === this.tableHeaders.length
+            return visibleHeaders;
+        },
+        tableHeadersBySort() {
+            return [
+                ...this.visibleTableHeaders.filter(header => header.field === this.sortType),
+                ...this.visibleTableHeaders.filter(header => header.field !== this.sortType)
+            ]
+        },
+        tableData() {
+            this.chunkedProducts = this.getSortedChunkedProducts(
+                this.itemsPerPage, this.sortType, this.isSortingReverse
+            );
+            return this.chunkedProducts[this.currentPage];
+        },
+    },
+    methods: {
+        ...mapMutations(['toggleProductToDelete', 'toggleProductsListToDelete']),
+        itemsPerPageClickHandler(itemsCount) {
+            this.itemsPerPage = itemsCount;
+            this.currentPage = 0;
+            this.isAllProductsOnPageCheckhed();
+        },
+        sortTypeClickHandler(sortType) {
+            this.sortType = sortType;
+        },
+        closeModal(prop) {
+            this.isConfirmation = prop;
+        },
+        nextPageClickHandler() {
+            if (this.currentPage < this.chunkedProducts.length - 1) {
+                this.currentPage++;
+                this.isAllProductsOnPageCheckhed();
+            }
+        },
+        previousPageClickHandler() {
+            if (this.currentPage > 0) {
+                this.currentPage--;
+                this.isAllProductsOnPageCheckhed();
+            }
+        },
+        changeHeaderVisibility(index) {
+            const currentHeader = this.tableHeaders[index];
+            currentHeader.visible = !currentHeader.visible;
+        },
+        toggleReverseSorting(header) {
+            if (header === this.sortType) {
+                this.isSortingReverse = !this.isSortingReverse
+                this.isAllProductsOnPageCheckhed();
+            }
+        },
+        selectAllColumnHandler() {
+            this.tableHeaders.forEach(header => header.visible = true);
+        },
+        toggleAllProductsToDelete() {
+            this.isAllProductsOnPageCheckhed();
+
+            if (!this.isAllCheckhed) {
+                this.isAllCheckhed = true;
+
+                this.toggleProductsListToDelete({
+                    data: this.tableData,
+                    prop: true
+                });
+            } else {
+                this.isAllCheckhed = false;
+
+                this.toggleProductsListToDelete({
+                    data: this.tableData,
+                    prop: false
+                });
+            }
+        },
+        markToDelete(id) {
+            this.toggleProductToDelete(id);
+
+            this.productsToDeleteOnPage = this.tableData.filter(product => product.isMarkToDelete).length;
+
+            if (!this.isAllCheckhed && (this.productsToDeleteOnPage - 1) === (this.itemsPerPage - 1)) {
+                this.isAllCheckhed = true;
+            } else {
+                this.isAllCheckhed = false;
+            }
+        },
+        isAllProductsOnPageCheckhed() {
+            this.isAllCheckhed = this.tableData.filter(product => product.isMarkToDelete).length === this.itemsPerPage;
+        }
     }
-  }
 }
 </script>
 
 <style lang="scss">
 @import './style/style.scss';
 
-table {
-  width: 1140px;
+.page-section {
+    width: 1140px;
+    margin: 0 auto;
+    margin-top: 32px;
 }
 
+.page-table {
+    &__control {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    &__contorl-wrapper {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        width: 550px;
+    }
+
+    &__contorl-container {
+        position: relative;
+    }
+}
+
+.button {
+    min-height: 32px;
+    padding: 3px 8px;
+    box-sizing: border-box;
+    background-color: $active-sorting-button-color;
+    color: $contrast-font-color;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+
+    &:disabled {
+        color: $disabled-button-font-color;
+        background-color: $disabled-button-bg-color;
+        border: 1px solid $disabled-button-border-color;
+        opacity: 0.3;
+        cursor:default;
+    }
+
+    &--delete {
+        width: 86px;
+    }
+}
 </style>
