@@ -39,7 +39,10 @@
             v-if="isColumnList"
         >
             <li class="multiselect__item">
-                <div class="checkbox" @click.stop>
+                <div
+                    class="checkbox"
+                    @click.stop
+                >
                     <input
                         class="checkbox__input visually-hidden"
                         ref="checkbox-column"

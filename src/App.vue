@@ -1,5 +1,8 @@
 <template>
-    <section class="page-section" v-if="isPageLoaded">
+    <section
+        class="page-section"
+        v-if="isPageLoaded"
+    >
         <PageSectionTitle>
             <h1 class="page-section__title">Table UI</h1>
         </PageSectionTitle>
@@ -119,14 +122,16 @@ export default {
         this.$store.dispatch('loadProducts');
     },
     computed: {
-        ...mapState(['products']),
+        ...mapState([
+            'products'
+        ]),
         ...mapGetters([
             'getSortedChunkedProducts',
             'getCountProductsToDelete'
         ]),
         visibleTableHeaders() {
             const visibleHeaders = this.tableHeaders.filter(header => header.visible);
-            this.isAllColumnVisible = visibleHeaders.length === this.tableHeaders.length
+            this.isAllColumnVisible = visibleHeaders.length === this.tableHeaders.length;
             return visibleHeaders;
         },
         tableHeadersBySort() {
@@ -143,7 +148,10 @@ export default {
         },
     },
     methods: {
-        ...mapMutations(['toggleProductToDelete', 'toggleProductsListToDelete']),
+        ...mapMutations([
+            'toggleProductToDelete',
+            'toggleProductsListToDelete'
+        ]),
         itemsPerPageClickHandler(itemsCount) {
             this.itemsPerPage = itemsCount;
             this.currentPage = 0;
@@ -173,7 +181,7 @@ export default {
         },
         toggleReverseSorting(header) {
             if (header === this.sortType) {
-                this.isSortingReverse = !this.isSortingReverse
+                this.isSortingReverse = !this.isSortingReverse;
                 this.isAllProductsOnPageCheckhed();
             }
         },
