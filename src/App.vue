@@ -229,6 +229,15 @@ export default {
                     this.showModalHandler('isDataChangeError')
                 })
         },
+        showModalHandler(modal) {
+            // обработчик для показа модальных окон при загрузке
+            this.isDataChanging = false;
+            this[modal] = true;
+
+            setTimeout(() => {
+                this[modal] = false;
+            }, this.delay);
+        },
         nextPageClickHandler() {
             // обработчик клика по кнопке переключения на следующую страницу
             if (this.currentPage < this.chunkedProducts.length - 1) {
@@ -266,15 +275,6 @@ export default {
         markToDelete(id) {
             // метод для отметки только одного продукта к удалению
             this.toggleProductToDelete(id);
-        },
-        showModalHandler(modal) {
-            // обработчик для показа модальных окон при загрузке
-            this.isDataChanging = false;
-            this[modal] = true;
-
-            setTimeout(() => {
-                this[modal] = false;
-            }, this.delay);
         }
     }
 }
