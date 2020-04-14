@@ -222,11 +222,11 @@ export default {
             this.$store.dispatch(actionName, id)
                 .then(() => {
                     // в случае успеха убираем лоадер и показываем сообщение о успешном изменении
-                    this.responseHandler('isDataChanged')
+                    this.showModalHandler('isDataChanged')
                 })
                 .catch(() => {
                     // в случае ошибки убираем лоадер и показываем сообщение об ошибке
-                    this.responseHandler('isDataChangeError')
+                    this.showModalHandler('isDataChangeError')
                 })
         },
         nextPageClickHandler() {
@@ -267,7 +267,8 @@ export default {
             // метод для отметки только одного продукта к удалению
             this.toggleProductToDelete(id);
         },
-        responseHandler(modal) {
+        showModalHandler(modal) {
+            // обработчик для показа модальных окон при загрузке
             this.isDataChanging = false;
             this[modal] = true;
 
