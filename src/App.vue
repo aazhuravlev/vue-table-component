@@ -131,7 +131,6 @@ export default {
             ],
             isPageLoading: true,
             isPageLoaded: false,
-            isAllCheckhed: false,
             isSortingReverse: false,
             isConfirmation: false,
             isLoadingError: false,
@@ -187,6 +186,10 @@ export default {
         productsToDeleteOnPage() {
             // метод для подсчета продуктов для удаления на странице
             return this.currentPageData.filter(product => product.isMarkToDelete).length;
+        },
+        isAllCheckhed() {
+            // метод для актуализации чекбокса отметки всех элементов на странице
+            return this.productsToDeleteOnPage === this.itemsPerPage;
         }
     },
     methods: {
@@ -198,14 +201,10 @@ export default {
             // обработчик для выбора количества элементов на странице
             this.itemsPerPage = itemsCount;
             this.currentPage = 0;
-
-            this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
         },
         sortTypeClickHandler(sortType) {
             // метод для установки типа сортировки
             this.sortType = sortType;
-
-            this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
         },
         closeModal(prop) {
             // метод для закрытия модального окна
@@ -226,8 +225,6 @@ export default {
                     this.isDataChanging = false;
                     this.isDataChanged = true;
 
-                    this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
-
                     setTimeout(() => {
                         this.isDataChanged = false;
                     }, this.delay);
@@ -246,16 +243,12 @@ export default {
             // обработчик клика по кнопке переключения на следующую страницу
             if (this.currentPage < this.chunkedProducts.length - 1) {
                 this.currentPage++;
-
-                this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
             }
         },
         previousPageClickHandler() {
             // обработчик клика по кнопке переключения на предыдущую страницу
             if (this.currentPage > 0) {
                 this.currentPage--;
-
-                this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
             }
         },
         changeHeaderVisibility(index) {
@@ -267,8 +260,6 @@ export default {
             // метод для разворота сортировки
             if (header === this.sortType) {
                 this.isSortingReverse = !this.isSortingReverse;
-
-                this.isAllProductsOnPageCheckhed(); // используем метод для актуализации чекбокса отметки всех элементов на странице
             }
         },
         selectAllColumnHandler() {
@@ -277,37 +268,14 @@ export default {
         },
         toggleAllProductsToDelete() {
             // метод для отметки всех продуктов на странице к удалению
-            if (!this.isAllCheckhed) {
-                this.isAllCheckhed = true;
-
                 this.toggleProductsListToDelete({ // устанавливаем элементам со страницы метки для удаления
                     products: this.currentPageData,
-                    prop: true
+                    prop: !this.isAllCheckhed
                 });
-            } else {
-                this.isAllCheckhed = false;
-
-                this.toggleProductsListToDelete({ // убираем элементам со страницы метки для удаления
-                    products: this.currentPageData,
-                    prop: false
-                });
-            }
         },
         markToDelete(id) {
             // метод для отметки только одного продукта к удалению
             this.toggleProductToDelete(id);
-
-            if (!this.isAllCheckhed && (this.productsToDeleteOnPage - 1) === (this.itemsPerPage - 1)) {
-                // условие срабатывает, при клике на последний чекбокс, если до этого было выбрано 9 чекбоксов из 10
-                // и устанавливает чекбокс, что все элементы на странице выбраны
-                this.isAllCheckhed = true;
-            } else {
-                this.isAllCheckhed = false;
-            }
-        },
-        isAllProductsOnPageCheckhed() {
-            // метод для актуализации чекбокса отметки всех элементов на странице
-            this.isAllCheckhed = this.currentPageData.filter(product => product.isMarkToDelete).length === this.itemsPerPage;
         }
     }
 }
