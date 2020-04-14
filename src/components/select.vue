@@ -19,6 +19,9 @@
                 v-for="itemsCount in pageSize"
                 :key="itemsCount"
                 @click="itemsPerPageClickHandler(itemsCount)"
+                :class="{
+                    'select__item--current': itemsCount === itemsPerPage
+                }"
             >
                 {{ itemsCount }} Per Page
             </li>
@@ -50,6 +53,7 @@
                         type="checkbox"
                         id="select-all-column"
                         :checked="isAllColumnVisible"
+                        :disabled="isAllColumnVisible"
                         @change="$emit('selectAllColumnHandler')"
                     />
                     <label
@@ -62,6 +66,9 @@
             </li>
             <li
                 class="multiselect__item"
+                :class="{
+                    'multiselect__item--current': tableHeader.field === sortType
+                }"
                 v-for="(tableHeader, index) in tableHeaders"
                 :key="tableHeader.field"
             >
@@ -161,6 +168,10 @@ export default {
         display: flex;
         align-items: center;
         padding: 5px 7px;
+    }
+
+    &__item--current {
+        cursor: default;
     }
 }
 
