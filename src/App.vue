@@ -222,21 +222,11 @@ export default {
             this.$store.dispatch(actionName, id)
                 .then(() => {
                     // в случае успеха убираем лоадер и показываем сообщение о успешном изменении
-                    this.isDataChanging = false;
-                    this.isDataChanged = true;
-
-                    setTimeout(() => {
-                        this.isDataChanged = false;
-                    }, this.delay);
+                    this.responseHandler('isDataChanged')
                 })
                 .catch(() => {
                     // в случае ошибки убираем лоадер и показываем сообщение об ошибке
-                    this.isDataChanging = false;
-                    this.isDataChangeError = true;
-
-                    setTimeout(() => {
-                        this.isDataChangeError = false;
-                    }, this.delay);
+                    this.responseHandler('isDataChangeError')
                 })
         },
         nextPageClickHandler() {
@@ -276,6 +266,14 @@ export default {
         markToDelete(id) {
             // метод для отметки только одного продукта к удалению
             this.toggleProductToDelete(id);
+        },
+        responseHandler(modal) {
+            this.isDataChanging = false;
+            this[modal] = true;
+
+            setTimeout(() => {
+                this[modal] = false;
+            }, this.delay);
         }
     }
 }
