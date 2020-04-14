@@ -69,7 +69,7 @@
                 :tableHeadersBySort="tableHeadersBySort"
                 :sortType="sortType"
                 :isSortingReverse="isSortingReverse"
-                :tablePageData="tablePageData"
+                :currentPageData="currentPageData"
                 @toggleAllProductsToDelete="toggleAllProductsToDelete"
                 @toggleReverseSorting="toggleReverseSorting"
                 @markToDelete="markToDelete"
@@ -180,7 +180,7 @@ export default {
                 this.itemsPerPage, this.sortType, this.isSortingReverse
             );
         },
-        tablePageData() {
+        currentPageData() {
             // метод для получения данных для текущей страницы таблицы
             return this.chunkedProducts[this.currentPage];
         }
@@ -277,14 +277,14 @@ export default {
                 this.isAllCheckhed = true;
 
                 this.toggleProductsListToDelete({ // устанавливаем элементам со страницы метки для удаления
-                    products: this.tablePageData,
+                    products: this.currentPageData,
                     prop: true
                 });
             } else {
                 this.isAllCheckhed = false;
 
                 this.toggleProductsListToDelete({ // убираем элементам со страницы метки для удаления
-                    products: this.tablePageData,
+                    products: this.currentPageData,
                     prop: false
                 });
             }
@@ -293,7 +293,7 @@ export default {
             // метод для отметки только одного продукта к удалению
             this.toggleProductToDelete(id);
 
-            this.productsToDeleteOnPage = this.tablePageData.filter(product => product.isMarkToDelete).length;
+            this.productsToDeleteOnPage = this.currentPageData.filter(product => product.isMarkToDelete).length;
 
             if (!this.isAllCheckhed && (this.productsToDeleteOnPage - 1) === (this.itemsPerPage - 1)) {
                 // условие срабатывает, при клике на последний чекбокс, если до этого было выбрано 9 чекбоксов из 10
@@ -305,7 +305,7 @@ export default {
         },
         isAllProductsOnPageCheckhed() {
             // метод для актуализации чекбокса отметки всех элементов на странице
-            this.isAllCheckhed = this.tablePageData.filter(product => product.isMarkToDelete).length === this.itemsPerPage;
+            this.isAllCheckhed = this.currentPageData.filter(product => product.isMarkToDelete).length === this.itemsPerPage;
         }
     }
 }

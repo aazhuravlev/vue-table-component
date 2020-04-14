@@ -14,7 +14,7 @@
         <tbody class="table-content__body">
             <TableContentRow
                 class="table-content__row"
-                v-for="item in tablePageData"
+                v-for="item in currentPageData"
                 :key="item.id"
                 :item="item"
                 :tableHeadersBySort="tableHeadersBySort"
@@ -40,7 +40,7 @@ export default {
         'tableHeadersBySort',
         'sortType',
         'isSortingReverse',
-        'tablePageData'
+        'currentPageData'
     ],
     methods: {
         toggleReverseSorting(header) {
@@ -197,6 +197,11 @@ export default {
         background-image: url("../images/checkbox-mark.svg");
         background-repeat: no-repeat;
         background-position: 0 0;
+    }
+
+    &__input:disabled + .checkbox__label,
+    &__input:disabled + .checkbox__label::before {
+        cursor: default;
     }
 }
 </style>
