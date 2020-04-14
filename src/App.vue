@@ -129,11 +129,9 @@ export default {
               { field: 'protein', name: 'Protein (g)', isVisible: true },
               { field: 'iron', name: 'Iron (%)', isVisible: true },
             ],
-            productsToDeleteOnPage: null,
             isPageLoading: true,
             isPageLoaded: false,
             isAllCheckhed: false,
-            isAllColumnVisible: null,
             isSortingReverse: false,
             isConfirmation: false,
             isLoadingError: false,
@@ -163,9 +161,11 @@ export default {
         ]),
         visibleTableHeaders() {
             // метод для получения только видимых заголовков
-            const visibleHeaders = this.tableHeaders.filter(header => header.isVisible);
-            this.isAllColumnVisible = visibleHeaders.length === this.tableHeaders.length;
-            return visibleHeaders;
+            return this.tableHeaders.filter(header => header.isVisible);
+        },
+        isAllColumnVisible() {
+            // метод для проверки на видимость всех колонок
+            return this.visibleTableHeaders.length === this.tableHeaders.length;
         },
         tableHeadersBySort() {
             // метод для установки первого заголовка в соответствии с выбранной сортировкой
@@ -183,6 +183,10 @@ export default {
         currentPageData() {
             // метод для получения данных для текущей страницы таблицы
             return this.chunkedProducts[this.currentPage];
+        },
+        productsToDeleteOnPage() {
+            // метод для подсчета продуктов для удаления на странице
+            return this.currentPageData.filter(product => product.isMarkToDelete).length;
         }
     },
     methods: {
@@ -292,8 +296,6 @@ export default {
         markToDelete(id) {
             // метод для отметки только одного продукта к удалению
             this.toggleProductToDelete(id);
-
-            this.productsToDeleteOnPage = this.currentPageData.filter(product => product.isMarkToDelete).length;
 
             if (!this.isAllCheckhed && (this.productsToDeleteOnPage - 1) === (this.itemsPerPage - 1)) {
                 // условие срабатывает, при клике на последний чекбокс, если до этого было выбрано 9 чекбоксов из 10
