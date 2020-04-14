@@ -69,7 +69,7 @@
                 :tableHeadersBySort="tableHeadersBySort"
                 :sortType="sortType"
                 :isSortingReverse="isSortingReverse"
-                :tableData="tableData"
+                :tablePageData="tablePageData"
                 @toggleAllProductsToDelete="toggleAllProductsToDelete"
                 @toggleReverseSorting="toggleReverseSorting"
                 @markToDelete="markToDelete"
@@ -117,7 +117,6 @@ export default {
     },
     data () {
         return {
-            chunkedProducts: [],
             itemsPerPage: 10,
             currentPage: 0,
             pageSize: [10, 15, 20],
@@ -175,13 +174,16 @@ export default {
                 ...this.visibleTableHeaders.filter(header => header.field !== this.sortType)
             ]
         },
-        tableData() {
-            // метод для получения данных для текущей страницы таблицы
-            this.chunkedProducts = this.getSortedChunkedProducts(
+        chunkedProducts() {
+            // метод для получения отсортированного массива и разбитого на подмассивы в соответствии с количеством элементов на странице
+            return this.getSortedChunkedProducts(
                 this.itemsPerPage, this.sortType, this.isSortingReverse
             );
-            return this.chunkedProducts[this.currentPage];
         },
+        tablePageData() {
+            // метод для получения данных для текущей страницы таблицы
+            return this.chunkedProducts[this.currentPage];
+        }
     },
     methods: {
         ...mapMutations([
@@ -275,14 +277,14 @@ export default {
                 this.isAllCheckhed = true;
 
                 this.toggleProductsListToDelete({ // устанавливаем элементам со страницы метки для удаления
-                    products: this.tableData,
+                    products: this.tablePageData,
                     prop: true
                 });
             } else {
                 this.isAllCheckhed = false;
 
                 this.toggleProductsListToDelete({ // убираем элементам со страницы метки для удаления
-                    products: this.tableData,
+                    products: this.tablePageData,
                     prop: false
                 });
             }
@@ -291,7 +293,7 @@ export default {
             // метод для отметки только одного продукта к удалению
             this.toggleProductToDelete(id);
 
-            this.productsToDeleteOnPage = this.tableData.filter(product => product.isMarkToDelete).length;
+            this.productsToDeleteOnPage = this.tablePageData.filter(product => product.isMarkToDelete).length;
 
             if (!this.isAllCheckhed && (this.productsToDeleteOnPage - 1) === (this.itemsPerPage - 1)) {
                 // условие срабатывает, при клике на последний чекбокс, если до этого было выбрано 9 чекбоксов из 10
@@ -303,7 +305,7 @@ export default {
         },
         isAllProductsOnPageCheckhed() {
             // метод для актуализации чекбокса отметки всех элементов на странице
-            this.isAllCheckhed = this.tableData.filter(product => product.isMarkToDelete).length === this.itemsPerPage;
+            this.isAllCheckhed = this.tablePageData.filter(product => product.isMarkToDelete).length === this.itemsPerPage;
         }
     }
 }

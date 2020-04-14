@@ -14,7 +14,7 @@
         <tbody class="table-content__body">
             <TableContentRow
                 class="table-content__row"
-                v-for="item in tableData"
+                v-for="item in tablePageData"
                 :key="item.id"
                 :item="item"
                 :tableHeadersBySort="tableHeadersBySort"
@@ -40,7 +40,7 @@ export default {
         'tableHeadersBySort',
         'sortType',
         'isSortingReverse',
-        'tableData'
+        'tablePageData'
     ],
     methods: {
         toggleReverseSorting(header) {
