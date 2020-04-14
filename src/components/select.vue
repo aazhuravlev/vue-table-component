@@ -106,8 +106,11 @@ export default {
     methods: {
         itemsPerPageClickHandler(itemsCount) {
             // обработчик для выбора количества элементов на странице
-            this.isItemsPerPageList = false;
-            this.$emit('itemsPerPageClickHandler', itemsCount);
+            if (this.itemsPerPage !== itemsCount) {
+                // клик срабатывает только если значение отличается от текущего
+                this.isItemsPerPageList = false;
+                this.$emit('itemsPerPageClickHandler', itemsCount);
+            }
         }
     }
 }
