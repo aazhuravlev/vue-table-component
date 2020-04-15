@@ -35,11 +35,13 @@
                     </svg>
                     delete
                 </button>
-                <ConfirmationModal
-                    v-if="isConfirmation"
-                    @closeModal="closeModal"
-                    @deletionConfirmationClickHandler="deletionConfirmationClickHandler(item.id)"
-                />
+                <transition name="fade">
+                    <ConfirmationModal
+                        v-if="isConfirmation"
+                        @closeModal="closeModal"
+                        @deletionConfirmationClickHandler="deletionConfirmationClickHandler(item.id)"
+                    />
+                </transition>
             </div>
         </td>
     </tr>

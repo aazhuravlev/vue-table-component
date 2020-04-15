@@ -8,24 +8,25 @@
         <svg class="select__icon">
             <use xlink:href="./src/images/sprites.svg#icon-arrow" />
         </svg>
-
-        <ul
-            class="select__list"
-            v-if="isItemsPerPageList"
-            @click.stop
-        >
-            <li
-                class="select__item"
-                v-for="itemsCount in pageSize"
-                :key="itemsCount"
-                @click="itemsPerPageClickHandler(itemsCount)"
-                :class="{
-                    'select__item--current': itemsCount === itemsPerPage
-                }"
+        <transition name="fade">
+            <ul
+                class="select__list"
+                v-if="isItemsPerPageList"
+                @click.stop
             >
-                {{ itemsCount }} Per Page
-            </li>
-        </ul>
+                <li
+                    class="select__item"
+                    v-for="itemsCount in pageSize"
+                    :key="itemsCount"
+                    @click="itemsPerPageClickHandler(itemsCount)"
+                    :class="{
+                        'select__item--current': itemsCount === itemsPerPage
+                    }"
+                >
+                    {{ itemsCount }} Per Page
+                </li>
+            </ul>
+        </transition>
     </span>
 
     <span
@@ -38,58 +39,60 @@
             <use xlink:href="./src/images/sprites.svg#icon-arrow" />
         </svg>
 
-        <ul
-            class="multiselect__list"
-            v-if="isColumnList"
-            @click.stop
-        >
-            <li class="multiselect__item">
-                <div
-                    class="checkbox"
-                >
-                    <input
-                        class="checkbox__input visually-hidden"
-                        ref="checkbox-column"
-                        type="checkbox"
-                        id="select-all-column"
-                        :checked="isAllColumnVisible"
-                        :disabled="isAllColumnVisible"
-                        @change="$emit('selectAllColumnHandler')"
-                    />
-                    <label
-                        class="checkbox__label"
-                        for="select-all-column"
-                    >
-                        <b>Select All</b>
-                    </label>
-                </div>
-            </li>
-            <li
-                class="multiselect__item"
-                :class="{
-                    'multiselect__item--current': tableHeader.field === sortType
-                }"
-                v-for="(tableHeader, index) in tableHeaders"
-                :key="tableHeader.field"
+        <transition name="fade">
+            <ul
+                class="multiselect__list"
+                v-if="isColumnList"
+                @click.stop
             >
-                <div class="checkbox">
-                    <input
-                        class="checkbox__input visually-hidden"
-                        type="checkbox"
-                        :id="tableHeader.field"
-                        :checked="tableHeader.isVisible"
-                        :disabled="tableHeader.field === sortType"
-                        @change="$emit('changeHeaderVisibility', index)"
-                    />
-                    <label
-                        class="checkbox__label"
-                        :for="tableHeader.field"
+                <li class="multiselect__item">
+                    <div
+                        class="checkbox"
                     >
-                        {{ tableHeader.name }}
-                    </label>
-                </div>
-            </li>
-        </ul>
+                        <input
+                            class="checkbox__input visually-hidden"
+                            ref="checkbox-column"
+                            type="checkbox"
+                            id="select-all-column"
+                            :checked="isAllColumnVisible"
+                            :disabled="isAllColumnVisible"
+                            @change="$emit('selectAllColumnHandler')"
+                        />
+                        <label
+                            class="checkbox__label"
+                            for="select-all-column"
+                        >
+                            <b>Select All</b>
+                        </label>
+                    </div>
+                </li>
+                <li
+                    class="multiselect__item"
+                    :class="{
+                        'multiselect__item--current': tableHeader.field === sortType
+                    }"
+                    v-for="(tableHeader, index) in tableHeaders"
+                    :key="tableHeader.field"
+                >
+                    <div class="checkbox">
+                        <input
+                            class="checkbox__input visually-hidden"
+                            type="checkbox"
+                            :id="tableHeader.field"
+                            :checked="tableHeader.isVisible"
+                            :disabled="tableHeader.field === sortType"
+                            @change="$emit('changeHeaderVisibility', index)"
+                        />
+                        <label
+                            class="checkbox__label"
+                            :for="tableHeader.field"
+                        >
+                            {{ tableHeader.name }}
+                        </label>
+                    </div>
+                </li>
+            </ul>
+        </transition>
     </span>
 </template>
 
@@ -186,5 +189,13 @@ export default {
     &__item {
         padding: 0;
     }
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .3s;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
 }
 </style>

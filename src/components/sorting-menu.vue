@@ -47,6 +47,7 @@ export default {
         padding: 3px 8px;
         cursor: pointer;
         border: none;
+        transition: 0.3s;
     }
 }
 </style>

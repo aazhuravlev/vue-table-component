@@ -1,94 +1,99 @@
 <template>
-    <Spinner v-if="isPageLoading && !isPageLoaded"/>
-    <section
-        class="page-section"
-        v-else-if="isPageLoaded"
-    >
-        <PageSectionTitle>
-            <h1 class="page-section__title">Table UI</h1>
-        </PageSectionTitle>
+    <transition name="fade" mode="out-in">
+        <Spinner v-if="isPageLoading && !isPageLoaded"/>
+        <section
+            class="page-section"
+            v-else-if="isPageLoaded"
+        >
+            <PageSectionTitle>
+                <h1 class="page-section__title">Table UI</h1>
+            </PageSectionTitle>
 
-        <div class="page-table">
-            <div class="page-table__control">
-                <SortingMenu
-                    :visibleTableHeaders="visibleTableHeaders"
-                    :sortType="sortType"
-                    @sortTypeClickHandler="sortTypeClickHandler"
-                />
+            <div class="page-table">
+                <div class="page-table__control">
+                    <SortingMenu
+                        :visibleTableHeaders="visibleTableHeaders"
+                        :sortType="sortType"
+                        @sortTypeClickHandler="sortTypeClickHandler"
+                    />
 
-                <div class="page-table__contorl-wrapper">
-                    <div class="page-table__contorl-container">
-                        <button
-                            class="button button--delete"
-                            :disabled="getCountProductsToDelete === 0"
-                            @click="isConfirmation = true"
-                        >
-                            Delete
-                            <span v-if="getCountProductsToDelete > 0">
-                                ({{ getCountProductsToDelete }})
-                            </span>
-                        </button>
+                    <div class="page-table__contorl-wrapper">
+                        <div class="page-table__contorl-container">
+                            <button
+                                class="button button--delete"
+                                :disabled="getCountProductsToDelete === 0"
+                                @click="isConfirmation = true"
+                            >
+                                Delete
+                                <span v-if="getCountProductsToDelete > 0">
+                                    ({{ getCountProductsToDelete }})
+                                </span>
+                            </button>
 
-                        <ConfirmationModal
-                            v-if="isConfirmation"
-                            :quantity="getCountProductsToDelete"
-                            @closeModal="closeModal"
-                            @deletionConfirmationClickHandler="deletionConfirmationClickHandler"
+                            <transition name="fade">
+                                <ConfirmationModal
+                                    v-if="isConfirmation"
+                                    :quantity="getCountProductsToDelete"
+                                    @closeModal="closeModal"
+                                    @deletionConfirmationClickHandler="deletionConfirmationClickHandler"
+                                />
+                            </transition>
+                        </div>
+
+                        <Select
+                            :itemsPerPage="itemsPerPage"
+                            :pageSize="pageSize"
+                            :isMultiselect="false"
+                            @itemsPerPageClickHandler="itemsPerPageClickHandler"
+                        />
+
+                        <Pagination
+                            :currentPage="currentPage"
+                            :itemsPerPage="itemsPerPage"
+                            :chunkedProducts="chunkedProducts"
+                            @previousPageClickHandler="previousPageClickHandler"
+                            @nextPageClickHandler="nextPageClickHandler"
+                        />
+
+                        <Select
+                            :tableHeaders="tableHeaders"
+                            :isAllColumnVisible="isAllColumnVisible"
+                            :visibleTableHeaders="visibleTableHeaders"
+                            :isMultiselect="true"
+                            :sortType="sortType"
+                            @selectAllColumnHandler="selectAllColumnHandler"
+                            @changeHeaderVisibility="changeHeaderVisibility"
                         />
                     </div>
-
-                    <Select
-                        :itemsPerPage="itemsPerPage"
-                        :pageSize="pageSize"
-                        :isMultiselect="false"
-                        @itemsPerPageClickHandler="itemsPerPageClickHandler"
-                    />
-
-                    <Pagination
-                        :currentPage="currentPage"
-                        :itemsPerPage="itemsPerPage"
-                        :chunkedProducts="chunkedProducts"
-                        @previousPageClickHandler="previousPageClickHandler"
-                        @nextPageClickHandler="nextPageClickHandler"
-                    />
-
-                    <Select
-                        :tableHeaders="tableHeaders"
-                        :isAllColumnVisible="isAllColumnVisible"
-                        :visibleTableHeaders="visibleTableHeaders"
-                        :isMultiselect="true"
-                        :sortType="sortType"
-                        @selectAllColumnHandler="selectAllColumnHandler"
-                        @changeHeaderVisibility="changeHeaderVisibility"
-                    />
                 </div>
+
+                <TableContent
+                    :isAllCheckhed="isAllCheckhed"
+                    :tableHeadersBySort="tableHeadersBySort"
+                    :sortType="sortType"
+                    :isSortingReverse="isSortingReverse"
+                    :currentPageData="currentPageData"
+                    @toggleAllProductsToDelete="toggleAllProductsToDelete"
+                    @toggleReverseSorting="toggleReverseSorting"
+                    @markToDelete="markToDelete"
+                    @deletionConfirmationClickHandler="deletionConfirmationClickHandler"
+                />
             </div>
+            <transition name="fade" mode="out-in">
+                <Spinner v-if="isDataChanging"/>
+                <AlertModal v-else-if="isDataChanged">
+                    Продукты успешно удалены
+                </AlertModal>
 
-            <TableContent
-                :isAllCheckhed="isAllCheckhed"
-                :tableHeadersBySort="tableHeadersBySort"
-                :sortType="sortType"
-                :isSortingReverse="isSortingReverse"
-                :currentPageData="currentPageData"
-                @toggleAllProductsToDelete="toggleAllProductsToDelete"
-                @toggleReverseSorting="toggleReverseSorting"
-                @markToDelete="markToDelete"
-                @deletionConfirmationClickHandler="deletionConfirmationClickHandler"
-            />
-        </div>
-
-        <Spinner v-if="isDataChanging"/>
-        <AlertModal v-else-if="isDataChanged">
-            Продукты успешно удалены
+                <AlertModal v-else-if="isDataChangeError">
+                    При удалении продуктов произошла ошибка, попробуйте еще раз
+                </AlertModal>
+            </transition>
+        </section>
+        <AlertModal v-else-if="isLoadingError">
+            При загрузке страницы произошла ошибка, пожалуйста, перезагрузите страницу
         </AlertModal>
-
-        <AlertModal v-else-if="isDataChangeError">
-            При удалении продуктов произошла ошибка, попробуйте еще раз
-        </AlertModal>
-    </section>
-    <AlertModal v-else-if="isLoadingError">
-        При загрузке страницы произошла ошибка, пожалуйста, перезагрузите страницу
-    </AlertModal>
+    </transition>
 </template>
 
 <script>
@@ -330,6 +335,7 @@ export default {
 
     &--delete {
         width: 86px;
+        transition: 0.3s;
     }
 }
 </style>

@@ -71,6 +71,7 @@ export default {
     &__header--active {
         color: $active-column-head-color;
         cursor: pointer;
+        transition: 0.3s;
     }
 
     &__header-icon {
@@ -79,10 +80,12 @@ export default {
         width: 8px;
         height: 12px;
         margin-left: 10px;
+        transition: 0.3s;
     }
 
     &__header-icon--reverse {
-        transform: rotate(180deg);
+        transform: rotate(-180deg);
+        transition: 0.3s;
     }
 
     &__row {
@@ -95,10 +98,12 @@ export default {
 
         &:hover {
             background-color: $table-row-hover-color;
+            transition: 0.3s;
         }
 
         &:hover .table-content__data:nth-child(2) {
             text-shadow: 0.25px 0.1px 0px $base-font-color, -0.25px -0.1px 0px $base-font-color;
+            transition: 0.3s;
         }
 
         &:hover .table-content__row-button {
